@@ -13,6 +13,19 @@ public class CameraController : MonoBehaviour
     private float velocity;
     private float zoomVelocity;
 
+    private PlayerInput playerInput;
+    private void Awake()
+    {
+        playerInput = new PlayerInput();
+        playerInput.Enable();
+        playerInput.Camera.Movement.performed += Movement_performed;
+    }
+
+    private void Movement_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj)
+    {
+        Debug.Log(obj.ReadValue<float>());
+    }
+
     void Update()
     {
         if (Input.GetMouseButton(2))
