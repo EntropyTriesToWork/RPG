@@ -120,7 +120,7 @@ public class @PlayerInput : IInputActionCollection, IDisposable
                     ""name"": ""Zoom"",
                     ""type"": ""Value"",
                     ""id"": ""2620e666-4359-4dbd-b2dd-f68fd4a829cc"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """"
                 }
@@ -129,7 +129,7 @@ public class @PlayerInput : IInputActionCollection, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""bc46d18c-4aa6-40fe-9a47-3b399c0c85fe"",
-                    ""path"": """",
+                    ""path"": ""<Mouse>/middleButton"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard"",
@@ -138,37 +138,42 @@ public class @PlayerInput : IInputActionCollection, IDisposable
                     ""isPartOfComposite"": false
                 },
                 {
-                    ""name"": ""1D Axis"",
-                    ""id"": ""fe18aa6e-d90b-47ce-98c5-574c5b289e4a"",
-                    ""path"": ""1DAxis"",
+                    ""name"": """",
+                    ""id"": ""f9e16c01-e3e7-40cd-a7a8-33c41fa88ffa"",
+                    ""path"": ""<Mouse>/rightButton"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
+                    ""groups"": ""Keyboard"",
                     ""action"": ""Movement"",
-                    ""isComposite"": true,
+                    ""isComposite"": false,
                     ""isPartOfComposite"": false
-                },
+                }
+            ]
+        },
+        {
+            ""name"": ""Cursor"",
+            ""id"": ""12cbdf9d-6bf8-4c21-ab68-b06f21321fc7"",
+            ""actions"": [
                 {
-                    ""name"": ""negative"",
-                    ""id"": ""cabc88c5-93b4-4920-9cd9-1a65fef1c21d"",
-                    ""path"": ""<Keyboard>/ctrl"",
+                    ""name"": ""Position"",
+                    ""type"": ""Value"",
+                    ""id"": ""f550f4b2-ef9f-4eeb-abc7-df3139ccd3bb"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""f1cf6804-aa2e-4d9d-8e22-79c799d81d6e"",
+                    ""path"": ""<Mouse>/position"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Movement"",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""Position"",
                     ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""positive"",
-                    ""id"": ""1bc1934f-151c-46c6-aa4c-44024df4f737"",
-                    ""path"": ""<Keyboard>/alt"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Movement"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -200,6 +205,9 @@ public class @PlayerInput : IInputActionCollection, IDisposable
         m_Camera = asset.FindActionMap("Camera", throwIfNotFound: true);
         m_Camera_Movement = m_Camera.FindAction("Movement", throwIfNotFound: true);
         m_Camera_Zoom = m_Camera.FindAction("Zoom", throwIfNotFound: true);
+        // Cursor
+        m_Cursor = asset.FindActionMap("Cursor", throwIfNotFound: true);
+        m_Cursor_Position = m_Cursor.FindAction("Position", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -327,6 +335,39 @@ public class @PlayerInput : IInputActionCollection, IDisposable
         }
     }
     public CameraActions @Camera => new CameraActions(this);
+
+    // Cursor
+    private readonly InputActionMap m_Cursor;
+    private ICursorActions m_CursorActionsCallbackInterface;
+    private readonly InputAction m_Cursor_Position;
+    public struct CursorActions
+    {
+        private @PlayerInput m_Wrapper;
+        public CursorActions(@PlayerInput wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Position => m_Wrapper.m_Cursor_Position;
+        public InputActionMap Get() { return m_Wrapper.m_Cursor; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(CursorActions set) { return set.Get(); }
+        public void SetCallbacks(ICursorActions instance)
+        {
+            if (m_Wrapper.m_CursorActionsCallbackInterface != null)
+            {
+                @Position.started -= m_Wrapper.m_CursorActionsCallbackInterface.OnPosition;
+                @Position.performed -= m_Wrapper.m_CursorActionsCallbackInterface.OnPosition;
+                @Position.canceled -= m_Wrapper.m_CursorActionsCallbackInterface.OnPosition;
+            }
+            m_Wrapper.m_CursorActionsCallbackInterface = instance;
+            if (instance != null)
+            {
+                @Position.started += instance.OnPosition;
+                @Position.performed += instance.OnPosition;
+                @Position.canceled += instance.OnPosition;
+            }
+        }
+    }
+    public CursorActions @Cursor => new CursorActions(this);
     private int m_KeyboardSchemeIndex = -1;
     public InputControlScheme KeyboardScheme
     {
@@ -345,5 +386,9 @@ public class @PlayerInput : IInputActionCollection, IDisposable
     {
         void OnMovement(InputAction.CallbackContext context);
         void OnZoom(InputAction.CallbackContext context);
+    }
+    public interface ICursorActions
+    {
+        void OnPosition(InputAction.CallbackContext context);
     }
 }

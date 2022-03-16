@@ -11,11 +11,14 @@ public class PlayerController : MonoBehaviour
 
     public float MoveSpeed { get => moveSpeed.Value; }
     public float rotationSpeed;
+    public float jumpForce;
+    public LayerMask groundLayers;
 
     public CharacterStat moveSpeed;
-    public LayerMask groundLayer, interactablesLayer;
+    public LayerMask interactablesLayer;
 
     public Vector2 movementInput;
+    public bool grounded;
 
     private const string runVar = "Running";
     private const string msVar = "MoveSpeed";
@@ -32,7 +35,7 @@ public class PlayerController : MonoBehaviour
         _camera = Camera.main;
         _rb = GetComponent<Rigidbody>();
     }
-    void Update()
+    void FixedUpdate()
     {
         if(movementInput.magnitude <= 0.1f)
         {
@@ -44,6 +47,7 @@ public class PlayerController : MonoBehaviour
             TryToRotate();
             _animator.SetBool(runVar, true);
         }
+        CheckForGround();
     }
     #region Movement 
     public void TryToMove()
@@ -52,10 +56,8 @@ public class PlayerController : MonoBehaviour
         Vector3 moveVector = _camera.transform.forward * movementInput.y;
         moveVector += _camera.transform.right * movementInput.x;
         moveVector.Normalize();
-
-        moveVector *= MoveSpeed * 4;
         moveVector = Vector3.ProjectOnPlane(moveVector, Vector3.up);
-        _rb.velocity = moveVector;
+        _rb.MovePosition(transform.position + moveVector * Time.fixedDeltaTime * MoveSpeed * 5);
     }
     public void TryToRotate()
     {
@@ -70,11 +72,27 @@ public class PlayerController : MonoBehaviour
     }
     public void TryToJump()
     {
-        moveSpeed.AddModifier(new StatModifier(1, StatModType.Flat));
+        if(_animator.GetCurrentAnimatorStateInfo(0).IsName("Jump") || !grounded) { return; }
+        _animator.Play("Jump");
+        _rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+        _rb.AddForce(_camera.transform.forward * movementInput.y * MoveSpeed, ForceMode.Impulse);
     }
     #endregion
 
     #region Logic
+    public void CheckForGround()
+    {
+        if(Physics.OverlapBox(transform.position, new Vector3(0.75f, 0.1f, 0.75f), transform.rotation, groundLayers).Length > 0)
+        {
+            grounded = true;
+        }
+        else
+        {
+            grounded = false;
+            _rb.AddForce(Physics.gravity);
+        }
+        _animator.SetBool("Grounded", grounded);
+    }
     private RaycastHit RayCastUnderMouse(LayerMask layer)
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
