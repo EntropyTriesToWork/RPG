@@ -1,21 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Sirenix.OdinInspector;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : BaseEntity
 {
     private Animator _animator;
     private PlayerInput _playerInput;
     private Camera _camera;
     private Rigidbody _rb;
 
-    public float MoveSpeed { get => moveSpeed.Value; }
+    public float MoveSpeed { get => entityStats.MoveSpeed.Value; }
     public float rotationSpeed;
     public float jumpForce;
     public LayerMask groundLayers;
-
-    public CharacterStat moveSpeed;
-    public LayerMask interactablesLayer;
 
     public Vector2 movementInput;
     public bool grounded;
@@ -99,11 +97,6 @@ public class PlayerController : MonoBehaviour
         RaycastHit hitData;
         Physics.Raycast(ray, out hitData, Mathf.Infinity, layer);
         return hitData;
-    }
-
-    public void TryToInteract()
-    {
-
     }
     #endregion
 }
