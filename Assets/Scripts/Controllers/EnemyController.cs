@@ -17,8 +17,6 @@ public class EnemyController : MonoBehaviour
     {
         
     }
-
-    // Update is called once per frame
     void FixedUpdate()
     {
         _navAgent.SetDestination(target.transform.position);

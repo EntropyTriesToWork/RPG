@@ -18,8 +18,9 @@ public class PlayerController : BaseEntity
     public Vector2 movementInput;
     public bool grounded;
 
-    private const string runVar = "Running";
-    private const string msVar = "MoveSpeed";
+    private const string RunningState = "Running";
+    private const string MovespeedVariable = "MoveSpeed";
+    private const string AttackState = "Attack";
 
     private void OnEnable()
     {
@@ -37,20 +38,25 @@ public class PlayerController : BaseEntity
     {
         if(movementInput.magnitude <= 0.1f)
         {
-            _animator.SetBool(runVar, false);
+            _animator.SetBool(RunningState, false);
         }
         else
         {
             TryToMove();
             TryToRotate();
-            _animator.SetBool(runVar, true);
+            _animator.SetBool(RunningState, true);
         }
         CheckForGround();
+    }
+    [Button] public void Attack()
+    {
+        if (IsAttacking()) { return; }
+        _animator.Play(AttackState);
     }
     #region Movement 
     public void TryToMove()
     {
-        _animator.SetFloat(msVar, MoveSpeed);
+        _animator.SetFloat(MovespeedVariable, MoveSpeed);
         Vector3 moveVector = _camera.transform.forward * movementInput.y;
         moveVector += _camera.transform.right * movementInput.x;
         moveVector.Normalize();
@@ -97,6 +103,11 @@ public class PlayerController : BaseEntity
         RaycastHit hitData;
         Physics.Raycast(ray, out hitData, Mathf.Infinity, layer);
         return hitData;
+    }
+    public bool IsAttacking()
+    {
+        if (_animator.GetCurrentAnimatorStateInfo(0).IsName(AttackState)) { return true; }
+        return false;
     }
     #endregion
 }
