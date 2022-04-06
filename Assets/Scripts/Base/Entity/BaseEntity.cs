@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Sirenix.OdinInspector;
 
+[RequireComponent(typeof(Animator))]
 public abstract class BaseEntity : MonoBehaviour
 {
     [FoldoutGroup("Entity")] public Stats baseStats;

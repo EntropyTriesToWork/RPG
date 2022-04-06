@@ -15,6 +15,7 @@ public class PlayerController : BaseEntity
     public float jumpForce;
     public LayerMask groundLayers;
 
+    public bool attacking;
     public Vector2 movementInput;
     public bool grounded;
 
@@ -28,7 +29,10 @@ public class PlayerController : BaseEntity
         _playerInput.Enable();
         _playerInput.PlayerMovement.Movement.performed += playerInput => movementInput = playerInput.ReadValue<Vector2>();
         _playerInput.PlayerMovement.Movement.canceled += playerInput => movementInput = Vector2.zero;
-        _playerInput.PlayerMovement.Jump.performed += _ => TryToJump();
+        _playerInput.PlayerMovement.Jump.performed += _ => TryToDodgeRoll();
+
+        _playerInput.Combat.PrimaryAttack.performed += _ => attacking = true;
+        _playerInput.Combat.PrimaryAttack.canceled += _ => attacking = false;
 
         _animator = GetComponent<Animator>();
         _camera = Camera.main;
@@ -36,6 +40,13 @@ public class PlayerController : BaseEntity
     }
     void FixedUpdate()
     {
+        CheckForGround();
+        if (attacking)
+        {
+            Attack();
+            return;
+        }
+        
         if(movementInput.magnitude <= 0.1f)
         {
             _animator.SetBool(RunningState, false);
@@ -46,22 +57,27 @@ public class PlayerController : BaseEntity
             TryToRotate();
             _animator.SetBool(RunningState, true);
         }
-        CheckForGround();
     }
-    [Button] public void Attack()
+
+    #region Abilities
+    public void Attack()
     {
-        if (IsAttacking()) { return; }
+        if (IsCurrentState("AttacK")) { return; }
         _animator.Play(AttackState);
     }
+    #endregion
+
     #region Movement 
     public void TryToMove()
     {
+        if (!_animator.GetCurrentAnimatorStateInfo(0).IsName("Idle")) { return; }
+
         _animator.SetFloat(MovespeedVariable, MoveSpeed);
         Vector3 moveVector = _camera.transform.forward * movementInput.y;
         moveVector += _camera.transform.right * movementInput.x;
         moveVector.Normalize();
         moveVector = Vector3.ProjectOnPlane(moveVector, Vector3.up);
-        _rb.MovePosition(transform.position + moveVector * Time.fixedDeltaTime * MoveSpeed * 5);
+        _rb.MovePosition(transform.position + moveVector * Time.fixedDeltaTime * MoveSpeed);
     }
     public void TryToRotate()
     {
@@ -74,12 +90,20 @@ public class PlayerController : BaseEntity
         Quaternion rot = Quaternion.Slerp(transform.rotation, targetRot, Time.deltaTime * rotationSpeed);
         transform.rotation = rot;
     }
-    public void TryToJump()
+    public void TryToDodgeRoll()
     {
-        if(_animator.GetCurrentAnimatorStateInfo(0).IsName("Jump") || !grounded) { return; }
-        _animator.Play("Jump");
-        _rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-        _rb.AddForce(_camera.transform.forward * movementInput.y * MoveSpeed, ForceMode.Impulse);
+        if(IsCurrentState("DodgeRoll") || !grounded) { return; }
+        _animator.Play("DodgeRoll");
+        _rb.AddForce(Vector3.forward * jumpForce + (Vector3)(movementInput * MoveSpeed), ForceMode.Impulse);
+        //_rb.AddForce(_camera.transform.forward * movementInput.y * MoveSpeed, ForceMode.Impulse);
+    }
+    public void StartDodgeRoll()
+    {
+
+    }
+    public void EndDodgeRoll()
+    {
+
     }
     #endregion
 
@@ -104,9 +128,9 @@ public class PlayerController : BaseEntity
         Physics.Raycast(ray, out hitData, Mathf.Infinity, layer);
         return hitData;
     }
-    public bool IsAttacking()
+    public bool IsCurrentState(string stateName)
     {
-        if (_animator.GetCurrentAnimatorStateInfo(0).IsName(AttackState)) { return true; }
+        if (_animator.GetCurrentAnimatorStateInfo(0).IsName(stateName)) { return true; }
         return false;
     }
     #endregion
