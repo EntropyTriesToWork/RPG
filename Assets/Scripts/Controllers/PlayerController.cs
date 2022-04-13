@@ -10,6 +10,8 @@ public class PlayerController : BaseEntity
     private Camera _camera;
     private Rigidbody _rb;
 
+    public HUD playerHUD;
+
     public float MoveSpeed { get => entityStats.MoveSpeed.Value; }
     public float rotationSpeed;
     public float jumpForce;
@@ -33,6 +35,10 @@ public class PlayerController : BaseEntity
 
         _playerInput.Combat.PrimaryAttack.performed += _ => attacking = true;
         _playerInput.Combat.PrimaryAttack.canceled += _ => attacking = false;
+    }
+    public override void Awake()
+    {
+        base.Awake();
 
         _animator = GetComponent<Animator>();
         _camera = Camera.main;
@@ -94,8 +100,8 @@ public class PlayerController : BaseEntity
     {
         if(IsCurrentState("DodgeRoll") || !grounded) { return; }
         _animator.Play("DodgeRoll");
-        _rb.AddForce(Vector3.forward * jumpForce + (Vector3)(movementInput * MoveSpeed), ForceMode.Impulse);
-        //_rb.AddForce(_camera.transform.forward * movementInput.y * MoveSpeed, ForceMode.Impulse);
+        //_rb.AddForce(transform.forward * jumpForce + (Vector3)(movementInput * MoveSpeed), ForceMode.Impulse);
+        //_rb.AddForce(transform.forward * movementInput.y * MoveSpeed * 100f, ForceMode.Impulse);
     }
     public void StartDodgeRoll()
     {

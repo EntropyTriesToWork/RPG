@@ -17,9 +17,9 @@ public class HUD : MonoBehaviour
         GetComponent<Canvas>().worldCamera = Camera.main;       
     }
 
-    public void UpdateHealth(int currentHP, int maxHP)
+    public void UpdateHealth(float currentHP, float maxHP)
     {
-        healthBarFill.fillAmount = (float)maxHP / (float)currentHP;
+        healthBarFill.fillAmount = currentHP / maxHP;
     }
     void Update()
     {

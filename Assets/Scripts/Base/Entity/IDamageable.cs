@@ -27,6 +27,9 @@ public struct DamageInfo
 public struct DamageReport
 {
     public DamageReportState damageState;
+    public int damage;
+    public bool killed;
+    public BaseEntity attacker;
 }
 public enum DamageReportState
 {
