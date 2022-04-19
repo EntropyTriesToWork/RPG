@@ -16,6 +16,6 @@ public class WeaponController : MonoBehaviour
     }
     public void WeaponDealDamage(IDamageable damageable)
     {
-        damageable.TakeDamage(new DamageInfo(10, 10, GetComponent<BaseEntity>().GetStats()));
+        damageable.TakeDamage(new DamageInfo(10 + Random.Range(-3, 3), 0, GetComponent<BaseEntity>().GetStats()));
     }
 }
