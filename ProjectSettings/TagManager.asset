@@ -4,7 +4,7 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - target
+  - Traps
   layers:
   - Default
   - TransparentFX
@@ -14,9 +14,9 @@ TagManager:
   - UI
   - Walkable
   - NonSelectable
-  - Selectable
+  - Traps
   - Player
-  - 
+  - Enemy
   - 
   - 
   - 

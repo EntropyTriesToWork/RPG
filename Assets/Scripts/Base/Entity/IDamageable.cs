@@ -3,24 +3,21 @@ using UnityEngine;
 public interface IDamageable
 {
     public DamageReport TakeDamage(DamageInfo damageInfo);
-    public DamageReport TakeDamageWithForce(DamageInfo damageInfo, Vector3 force);
 }
 [System.Serializable]
 public struct DamageInfo
 {
-    public int physicalAttack;
-    public int magicAttack;
-    public Stats stats;
+    public int damage;
     public bool dodgeable;
     public bool lethal;
+    public GameObject attacker;
 
-    public DamageInfo(int pATK, int mATK, Stats stats, bool dodgeable = true, bool lethal = true)
+    public DamageInfo(int damage, GameObject attacker, bool dodgeable = true, bool lethal = true)
     {
-        physicalAttack = pATK;
-        magicAttack = mATK;
-        this.stats = stats;
+        this.damage = damage;
         this.dodgeable = dodgeable;
         this.lethal = lethal;
+        this.attacker = attacker;
     }
 }
 [System.Serializable]
@@ -29,7 +26,7 @@ public struct DamageReport
     public DamageReportState damageState;
     public int damage;
     public bool killed;
-    public BaseEntity attacker;
+    public GameObject attacker;
 }
 public enum DamageReportState
 {
