@@ -297,6 +297,8 @@ public class PlayerController : BaseEntity
     {
         _hc.Heal(10);
         experience++;
+        jumps++;
+        jumps = Mathf.Clamp(jumps, 0, jumpCount);
 
         if (experience >= level + 1)
         {
