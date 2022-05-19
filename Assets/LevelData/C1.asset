@@ -15,8 +15,8 @@ MonoBehaviour:
   key: C1
   levelData:
     description: Fly?
-    difficulty: 5
+    difficulty: 3
     passed: 1
     unlocked: 1
-    time: 3.216528
+    time: 1.3778422
     mapPrefab: {fileID: 8953960959074028589, guid: 426e058c3fac2c04e9496e3f4c3b2dd4, type: 3}

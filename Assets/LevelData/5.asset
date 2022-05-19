@@ -14,8 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   key: 5
   levelData:
-    description: Leaps
+    description: Jumping
     difficulty: 1
-    passed: 0
-    time: 0
+    passed: 1
+    unlocked: 1
+    time: 7.202533
     mapPrefab: {fileID: 8250689206296509062, guid: adc6537b0cba1f640b5c51ceda0de9fc, type: 3}

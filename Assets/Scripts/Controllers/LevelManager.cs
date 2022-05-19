@@ -15,6 +15,7 @@ public class LevelManager : MonoBehaviour
     [FoldoutGroup("UI")] public CanvasGroup levelButtonsCanvas;
     [FoldoutGroup("UI")] public Transform levelButtonsParent;
     [FoldoutGroup("UI")] public GameObject levelButtonPrefab;
+    [FoldoutGroup("UI")] public TMP_Text levelDescText;
 
     public LevelSO selectedLevel;
     List<LevelButton> _levelButtons;
@@ -35,6 +36,8 @@ public class LevelManager : MonoBehaviour
     {
         LoadLevelDataFromPlayerPrefs();
         _levelButtons = new List<LevelButton>();
+
+        levelDescText.text = "";
 
         levelButtonsCanvas.alpha = 0;
         levelButtonsCanvas.blocksRaycasts = false;
@@ -125,6 +128,7 @@ public class LevelManager : MonoBehaviour
         else
         {
             CloseLevelSelection();
+            HideLevelDescription();
             SceneManager.LoadScene("MainMenu");
         }
     }
@@ -151,6 +155,7 @@ public class LevelManager : MonoBehaviour
     public void SpawnLevel()
     {
         Instantiate(selectedLevel.levelData.mapPrefab);
+        ShowLevelDescription();
     }
     public void SelectLevel(LevelSO level)
     {
@@ -175,6 +180,14 @@ public class LevelManager : MonoBehaviour
         levelButtonsCanvas.interactable = false;
 
         DeleteLevelButtons();
+    }
+    public void ShowLevelDescription()
+    {
+        levelDescText.text = selectedLevel.levelData.description;
+    }
+    public void HideLevelDescription()
+    {
+        levelDescText.text = "";
     }
     #endregion 
 

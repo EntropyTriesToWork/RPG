@@ -16,6 +16,7 @@ public class GameManager : MonoBehaviour
     [FoldoutGroup("Required")] [SerializeField] TMP_Text _gameOverTime;
     [FoldoutGroup("Required")] [SerializeField] CanvasGroup _victoryCanvas;
     [FoldoutGroup("Required")] [SerializeField] TMP_Text _victoryTime;
+    [FoldoutGroup("Required")] [SerializeField] GameObject _gameHUD;
 
     private void Awake()
     {
@@ -33,6 +34,7 @@ public class GameManager : MonoBehaviour
     public void Start()
     {
         LevelManager.Instance.SpawnLevel();
+        _gameHUD.SetActive(true);
     }
     private void Update()
     {
@@ -54,6 +56,7 @@ public class GameManager : MonoBehaviour
     }
     public void MainMenu()
     {
+        LevelManager.Instance.HideLevelDescription();
         SceneManager.LoadScene("MainMenu");
     }
     public void Quit()
@@ -77,6 +80,7 @@ public class GameManager : MonoBehaviour
     public void GameOver()
     {
         if (gameState != GameState.Normal) { return; }
+        _gameHUD.SetActive(false);
         gameState = GameState.Defeat;
         _gameOverCanvas.interactable = true;
         _gameOverCanvas.blocksRaycasts = true;
@@ -94,6 +98,7 @@ public class GameManager : MonoBehaviour
     public void Victory()
     {
         if (gameState != GameState.Normal) { return; }
+        _gameHUD.SetActive(false);
         gameState = GameState.Victory;
         _victoryCanvas.interactable = true;
         _victoryCanvas.blocksRaycasts = true;
