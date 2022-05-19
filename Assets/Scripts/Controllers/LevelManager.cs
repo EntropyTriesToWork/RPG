@@ -94,13 +94,13 @@ public class LevelManager : MonoBehaviour
     public void LevelPassed(float time)
     {
         selectedLevel.levelData.passed = true;
-        if (time < selectedLevel.levelData.time || time == 0)
+        PlayerPrefs.SetInt(selectedLevel.key + "_Passed", 1);
+
+        if (time < selectedLevel.levelData.time || selectedLevel.levelData.time == 0f)
         {
             selectedLevel.levelData.time = time;
             PlayerPrefs.SetFloat(selectedLevel.key + "_Time", time);
         }
-
-        PlayerPrefs.SetInt(selectedLevel.key + "_Passed", 1);
 
         LevelSO level = GetNextLevel();
         if (level != null)

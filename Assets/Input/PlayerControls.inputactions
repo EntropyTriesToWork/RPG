@@ -11,7 +11,8 @@
                     "id": "50b17a1d-57c2-4025-96b5-0022ce91e672",
                     "expectedControlType": "Vector2",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": true
                 },
                 {
                     "name": "Jump",
@@ -19,7 +20,17 @@
                     "id": "ca51d2be-89c4-4d6b-8cb4-a1bd20803b79",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Dash",
+                    "type": "Button",
+                    "id": "a48e16d0-00fc-4a8b-820a-123981803e54",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -88,6 +99,17 @@
                     "action": "Jump",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "43a1dac3-d8b4-45fa-880d-9beea9ed1ee7",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard",
+                    "action": "Dash",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         },
@@ -101,7 +123,8 @@
                     "id": "5591c1ab-f265-440f-a81b-517f3313cfe8",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "SecondaryAttack",
@@ -109,7 +132,8 @@
                     "id": "effcd3ff-710f-4832-bcb8-2c280c65404f",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "DodgeRoll",
@@ -117,7 +141,8 @@
                     "id": "e69d1fca-1547-4d1d-a2f7-1ed40a9c0b9d",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -166,7 +191,8 @@
                     "id": "f3a9a2db-1566-4d78-843d-e19e519afcc0",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "Zoom",
@@ -174,7 +200,8 @@
                     "id": "2620e666-4359-4dbd-b2dd-f68fd4a829cc",
                     "expectedControlType": "",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -212,7 +239,8 @@
                     "id": "f550f4b2-ef9f-4eeb-abc7-df3139ccd3bb",
                     "expectedControlType": "Vector2",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [

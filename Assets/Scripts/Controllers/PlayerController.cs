@@ -9,16 +9,27 @@ public class PlayerController : BaseEntity
     private PlayerInput _playerInput;
 
     [FoldoutGroup("Settings")] public GameObject attackWeapon;
-    [FoldoutGroup("Settings")] public float jumpForce;
     [FoldoutGroup("Settings")] public LayerMask groundLayers, enemyLayer;
+
+    [FoldoutGroup("Leveling Up")] public GameObject levelUpEffect;
+    [FoldoutGroup("Leveling Up")] public TMPro.TMP_Text appleCount;
+
+    [FoldoutGroup("Movement")] public GameObject afterImagePrefab;
+    [FoldoutGroup("Movement")] public float dashForce;
+    [FoldoutGroup("Movement")] public float jumpForce;
+    [FoldoutGroup("Movement")] public int jumpCount = 1;
+    [FoldoutGroup("Movement")] public ParticleSystem jumpParticleEffect;
 
     public float MoveSpeed { get => entityStats.MoveSpeed.Value; }
 
+    [FoldoutGroup("ReadOnly")] [ReadOnly] public int level;
+    [FoldoutGroup("ReadOnly")] [ReadOnly] public int experience;
     [FoldoutGroup("ReadOnly")] [ReadOnly] public bool attacking;
     [FoldoutGroup("ReadOnly")] [ReadOnly] public float attackCooldown = 0;
+    [FoldoutGroup("ReadOnly")] [ReadOnly] public float dashCooldown = 0;
     [FoldoutGroup("ReadOnly")] [ReadOnly] public Vector2 movementInput;
     [FoldoutGroup("ReadOnly")] [ReadOnly] public bool grounded;
-    [FoldoutGroup("ReadOnly")] [ReadOnly] public int jumps = 2;
+    [FoldoutGroup("ReadOnly")] [ReadOnly] public int jumps = 1;
 
     private bool _canCheckForGround;
     [FoldoutGroup("ReadOnly")] [ReadOnly] public Vector2 lastValidPosition;
@@ -31,6 +42,7 @@ public class PlayerController : BaseEntity
         _playerInput.PlayerMovement.Movement.performed += playerInput => movementInput = playerInput.ReadValue<Vector2>();
         _playerInput.PlayerMovement.Movement.canceled += playerInput => movementInput = Vector2.zero;
         _playerInput.PlayerMovement.Jump.performed += Jump;
+        _playerInput.PlayerMovement.Dash.performed += Dash;
 
         _playerInput.Combat.PrimaryAttack.performed += _ => attacking = true;
         _playerInput.Combat.PrimaryAttack.canceled += _ => attacking = false;
@@ -40,6 +52,7 @@ public class PlayerController : BaseEntity
         _playerInput.PlayerMovement.Movement.performed -= playerInput => movementInput = playerInput.ReadValue<Vector2>();
         _playerInput.PlayerMovement.Movement.canceled -= playerInput => movementInput = Vector2.zero;
         _playerInput.PlayerMovement.Jump.performed -= Jump;
+        _playerInput.PlayerMovement.Dash.performed -= Dash;
 
         _playerInput.Combat.PrimaryAttack.performed -= _ => attacking = true;
         _playerInput.Combat.PrimaryAttack.canceled -= _ => attacking = false;
@@ -51,7 +64,8 @@ public class PlayerController : BaseEntity
         _canCheckForGround = true;
         attackWeapon.SetActive(false);
 
-        jumps = 1;
+        jumps = jumpCount;
+        level = 0;
     }
     void FixedUpdate()
     {
@@ -60,10 +74,8 @@ public class PlayerController : BaseEntity
 
         if (_hc.IsDead || GameManager.Instance.gameState != GameManager.GameState.Normal) { return; }
 
-        if (attackCooldown > 0f)
-        {
-            attackCooldown -= Time.fixedDeltaTime;
-        }
+        if (attackCooldown > 0f) { attackCooldown -= Time.fixedDeltaTime; }
+        if (dashCooldown > 0f) { dashCooldown -= Time.fixedDeltaTime; }
 
         //Prevent player actions when hit.
         if (IsCurrentState(HitState) || stunned) { return; }
@@ -117,6 +129,7 @@ public class PlayerController : BaseEntity
                 enemy.TakeDamage(new DamageInfo(ATK, gameObject));
             }
         }
+        _rb.AddForce(new Vector2(transform.localScale.x * 2f, 0), ForceMode2D.Impulse);
         StartCoroutine(DelayedAction(0.2f, () => attackWeapon.SetActive(false)));
         StartCoroutine(DelayedAction(0.2f, () => attackWeapon.transform.GetComponentInChildren<TrailRenderer>().Clear()));
     }
@@ -141,6 +154,40 @@ public class PlayerController : BaseEntity
     #endregion
 
     #region Movement 
+    public void Dash(InputAction.CallbackContext callbackContext)
+    {
+        if (_hc.IsDead || GameManager.Instance.gameState != GameManager.GameState.Normal) { return; }
+        if (dashCooldown > 0f) { return; }
+
+        float duration = 0.2f;
+        if (level >= 2)
+        {
+            dashCooldown = 2f;
+
+            _rb.velocity = Vector2.zero;
+            _rb.AddForce(Vector2.right * transform.localScale.x * dashForce, ForceMode2D.Impulse);
+            _rb.gravityScale = 0;
+            _rb.drag = 1;
+            StartCoroutine(DelayedAction(duration, () => _rb.gravityScale = 2));
+            StartCoroutine(DelayedAction(duration, () => _rb.drag = 5));
+            StartCoroutine(DelayedAction(duration, () => _rb.velocity *= 0.5f));
+            StartCoroutine(DashAfterImage(duration));
+        }
+
+        IEnumerator DashAfterImage(float duration)
+        {
+            float time = duration;
+            while (time > 0)
+            {
+                GameObject obj = Instantiate(afterImagePrefab, transform.position, Quaternion.identity);
+                obj.transform.localScale = transform.localScale;
+                obj.GetComponent<SpriteRenderer>().sprite = _sr.sprite;
+                Destroy(obj, 0.15f);
+                time -= Time.deltaTime;
+                yield return new WaitForEndOfFrame();
+            }
+        }
+    }
     public override void Move()
     {
         movementInput.y = 0;
@@ -163,6 +210,8 @@ public class PlayerController : BaseEntity
             _rb.drag = 1;
             StartCoroutine(DelayedAction(0.2f, () => _canCheckForGround = true));
             StartCoroutine(DelayedAction(0.2f, () => _rb.drag = 5));
+
+            jumpParticleEffect.Play();
             return;
         }
 
@@ -172,6 +221,7 @@ public class PlayerController : BaseEntity
             _rb.velocity = new Vector2(_rb.velocity.x, 0);
             _rb.AddForce(jumpForce * Vector2.up, ForceMode2D.Impulse);
             jumps--;
+            jumpParticleEffect.Play();
             return;
         }
     }
@@ -217,7 +267,7 @@ public class PlayerController : BaseEntity
         {
             grounded = true;
             _rb.drag = 5;
-            jumps = 1;
+            jumps = jumpCount;
             lastValidPosition = transform.position;
             if (IsCurrentState(FallingState)) { _animator.Play("Idle"); }
         }
@@ -239,6 +289,71 @@ public class PlayerController : BaseEntity
     {
         if (_animator.GetCurrentAnimatorStateInfo(0).IsName(stateName)) { return true; }
         return false;
+    }
+    #endregion
+
+    #region Leveling
+    public void PickupApple()
+    {
+        _hc.Heal(10);
+        experience++;
+
+        if (experience >= level + 1)
+        {
+            LevelUp();
+        }
+
+        appleCount.text = experience.ToString() + "/" + (level + 1).ToString();
+    }
+    public void LevelUp()
+    {
+        level++;
+        experience = 0;
+        StartCoroutine(LevelUpEffect());
+
+        switch (level)
+        {
+            case 1:
+                //Gain Extra Jump
+                jumpCount++;
+                jumps++;
+                break;
+            case 2:
+                //Unlock Dash
+                break;
+            case 3:
+                //Gain Extra Damage and Attack Speed
+                entityStats.Attack.AddModifier(new StatModifier(5, StatModType.Flat));
+                entityStats.AttackSpeed.AddModifier(new StatModifier(0.5f, StatModType.Flat));
+                break;
+            case 4:
+                //Increase MS and Jumpforce
+                entityStats.MoveSpeed.AddModifier(new StatModifier(2, StatModType.Flat));
+                break;
+            case 5:
+                //Gain Extra Jump
+                jumpCount++;
+                jumps++;
+                break;
+            default:
+                // All other levels just gain max HP.
+                entityStats.MaxHealth.AddModifier(new StatModifier(10, StatModType.Flat));
+                break;
+        }
+    }
+    IEnumerator LevelUpEffect()
+    {
+        GameObject obj = Instantiate(levelUpEffect, this.transform);
+
+        obj.transform.localPosition = new Vector3(0, 1.5f, 0);
+
+        while (obj.transform.localPosition.y < 2f)
+        {
+            obj.transform.localPosition += new Vector3(0, Time.deltaTime, 0);
+            obj.transform.localScale = transform.localScale;
+            yield return new WaitForEndOfFrame();
+        }
+        Destroy(obj);
     }
     #endregion
 

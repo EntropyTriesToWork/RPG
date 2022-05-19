@@ -3,6 +3,7 @@ using UnityEngine;
 public interface IDamageable
 {
     public DamageReport TakeDamage(DamageInfo damageInfo);
+    public void Heal(int healAmount);
 }
 [System.Serializable]
 public struct DamageInfo

@@ -22,7 +22,7 @@ public class LevelButton : MonoBehaviour
         _button = GetComponent<Button>();
         _button.onClick.RemoveAllListeners();
         levelButton = levelData;
-        if (levelButton.levelData.unlocked)
+        if (levelButton.levelData.unlocked || levelButton.levelData.passed)
         {
             _button.interactable = true;
             levelNumber.text = levelData.key;

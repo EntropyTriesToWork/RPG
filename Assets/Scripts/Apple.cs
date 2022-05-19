@@ -12,7 +12,7 @@ public class Apple : MonoBehaviour
         {
             Pickup();
 
-            collision.GetComponent<HealthComponent>().Health += 10;
+            collision.GetComponent<PlayerController>().PickupApple();
         }
     }
     public void Pickup()

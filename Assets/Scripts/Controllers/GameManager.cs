@@ -93,6 +93,7 @@ public class GameManager : MonoBehaviour
     }
     public void Victory()
     {
+        if (gameState != GameState.Normal) { return; }
         gameState = GameState.Victory;
         _victoryCanvas.interactable = true;
         _victoryCanvas.blocksRaycasts = true;

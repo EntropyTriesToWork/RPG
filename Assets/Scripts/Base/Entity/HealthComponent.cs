@@ -64,6 +64,12 @@ public class HealthComponent : MonoBehaviour, IDamageable
         return report;
     }
 
+    public void Heal(int healAmount)
+    {
+        int maxHealAmt = _entity.MAXHP - health;
+        Health += Mathf.Clamp(healAmount, 0, maxHealAmt);
+    }
+
     #region Getters
     public bool IsDead => Health <= 0;
     #endregion
