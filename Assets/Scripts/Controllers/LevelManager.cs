@@ -25,6 +25,11 @@ public class LevelManager : MonoBehaviour
         else { Instance = this; }
 
         DontDestroyOnLoad(this);
+
+        if (!PlayerPrefs.HasKey(levels[0].key + "_Passed"))
+        {
+            ResetSaveData();
+        }
     }
     private void Start()
     {
