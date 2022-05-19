@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using Sirenix.OdinInspector;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -29,6 +30,10 @@ public class GameManager : MonoBehaviour
         _victoryCanvas.blocksRaycasts = false;
         _victoryCanvas.alpha = 0;
     }
+    public void Start()
+    {
+        LevelManager.Instance.SpawnLevel();
+    }
     private void Update()
     {
         if (gameState == GameState.Normal)
@@ -41,19 +46,19 @@ public class GameManager : MonoBehaviour
     #region State
     public void NextLevel()
     {
-
+        LevelManager.Instance.GoToNextLevel();
     }
     public void RestartLevel()
     {
-
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
     public void MainMenu()
     {
-
+        SceneManager.LoadScene("MainMenu");
     }
     public void Quit()
     {
-
+        Application.Quit();
     }
     public void Pause()
     {
@@ -61,7 +66,7 @@ public class GameManager : MonoBehaviour
     }
     public void ChooseLevels()
     {
-
+        LevelManager.Instance.OpenLevelSelection();
     }
 
     public void Resume()
@@ -71,6 +76,7 @@ public class GameManager : MonoBehaviour
     }
     public void GameOver()
     {
+        if (gameState != GameState.Normal) { return; }
         gameState = GameState.Defeat;
         _gameOverCanvas.interactable = true;
         _gameOverCanvas.blocksRaycasts = true;
@@ -91,6 +97,8 @@ public class GameManager : MonoBehaviour
         _victoryCanvas.interactable = true;
         _victoryCanvas.blocksRaycasts = true;
         _victoryTime.text = FormatTimeToMinutes(_time);
+
+        LevelManager.Instance.LevelPassed(_time);
 
         StartCoroutine(VictoryMenuTurnVisible());
     }

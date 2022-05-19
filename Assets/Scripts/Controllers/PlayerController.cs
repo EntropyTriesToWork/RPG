@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Sirenix.OdinInspector;
+using UnityEngine.InputSystem;
 
 public class PlayerController : BaseEntity
 {
@@ -29,10 +30,19 @@ public class PlayerController : BaseEntity
         _playerInput.Enable();
         _playerInput.PlayerMovement.Movement.performed += playerInput => movementInput = playerInput.ReadValue<Vector2>();
         _playerInput.PlayerMovement.Movement.canceled += playerInput => movementInput = Vector2.zero;
-        _playerInput.PlayerMovement.Jump.performed += _ => Jump();
+        _playerInput.PlayerMovement.Jump.performed += Jump;
 
         _playerInput.Combat.PrimaryAttack.performed += _ => attacking = true;
         _playerInput.Combat.PrimaryAttack.canceled += _ => attacking = false;
+    }
+    private void OnDestroy()
+    {
+        _playerInput.PlayerMovement.Movement.performed -= playerInput => movementInput = playerInput.ReadValue<Vector2>();
+        _playerInput.PlayerMovement.Movement.canceled -= playerInput => movementInput = Vector2.zero;
+        _playerInput.PlayerMovement.Jump.performed -= Jump;
+
+        _playerInput.Combat.PrimaryAttack.performed -= _ => attacking = true;
+        _playerInput.Combat.PrimaryAttack.canceled -= _ => attacking = false;
     }
     public override void Awake()
     {
@@ -48,7 +58,7 @@ public class PlayerController : BaseEntity
         CheckForGround();
         CheckIfPlayerOutOfBounds();
 
-        if (_hc.IsDead) { return; }
+        if (_hc.IsDead || GameManager.Instance.gameState != GameManager.GameState.Normal) { return; }
 
         if (attackCooldown > 0f)
         {
@@ -140,7 +150,7 @@ public class PlayerController : BaseEntity
     {
         transform.localScale = new Vector3(movementInput.x < 0 ? -1 : 1, 1, 1);
     }
-    public void Jump()
+    public void Jump(InputAction.CallbackContext context)
     {
         if (_hc.IsDead || GameManager.Instance.gameState != GameManager.GameState.Normal) { return; }
         if (grounded)
