@@ -10,6 +10,9 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance;
     [BoxGroup("Read Only")] [ReadOnly] public GameState gameState;
     [BoxGroup("Read Only")] [SerializeField] float _time;
+    public float GameTime { get => _time; }
+
+    [BoxGroup("Arena")] public bool arenaMode;
 
     [FoldoutGroup("Required")] [SerializeField] TMP_Text _timeText;
     [FoldoutGroup("Required")] [SerializeField] CanvasGroup _gameOverCanvas;
@@ -33,7 +36,7 @@ public class GameManager : MonoBehaviour
     }
     public void Start()
     {
-        LevelManager.Instance.SpawnLevel();
+        if (!arenaMode) { LevelManager.Instance.SpawnLevel(); }
         _gameHUD.SetActive(true);
     }
     private void Update()
@@ -48,7 +51,8 @@ public class GameManager : MonoBehaviour
     #region State
     public void NextLevel()
     {
-        LevelManager.Instance.GoToNextLevel();
+        if (!arenaMode) { LevelManager.Instance.GoToNextLevel(); }
+        else { SceneManager.LoadScene("MainMenu"); }
     }
     public void RestartLevel()
     {
@@ -98,6 +102,7 @@ public class GameManager : MonoBehaviour
     public void Victory()
     {
         if (gameState != GameState.Normal) { return; }
+        if (arenaMode) { return; }
         _gameHUD.SetActive(false);
         gameState = GameState.Victory;
         _victoryCanvas.interactable = true;

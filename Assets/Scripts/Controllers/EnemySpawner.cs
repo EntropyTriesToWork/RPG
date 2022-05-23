@@ -4,24 +4,30 @@ using UnityEngine;
 
 public class EnemySpawner : MonoBehaviour
 {
-    public float baseSpawnCooldown;
+    public AnimationCurve spawnCooldown;
     public GameObject enemyPrefab;
     private float _spawnCD;
 
-    void Start()
-    {
-        
-    }
+    public List<Transform> spawnPoints;
+    public PlayerController player;
 
     // Update is called once per frame
     void Update()
     {
         _spawnCD -= Time.deltaTime;
 
-        if(_spawnCD <= 0f)
+        if (_spawnCD <= 0f)
         {
-            Instantiate(enemyPrefab, (Vector3)Random.insideUnitCircle + Vector3.zero, Quaternion.identity);
-            _spawnCD = baseSpawnCooldown;
+            Instantiate(enemyPrefab, GetSpawnPosition(), Quaternion.identity);
+            _spawnCD = spawnCooldown.Evaluate(GameManager.Instance.GameTime);
         }
+    }
+    public Vector2 GetSpawnPosition()
+    {
+        for (int i = 0; i < spawnPoints.Count; i++)
+        {
+            if (Vector2.Distance(player.transform.position, spawnPoints[i].position) > 2) { return spawnPoints[i].position; }
+        }
+        return Vector2.zero;
     }
 }

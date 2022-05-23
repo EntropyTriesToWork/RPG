@@ -42,7 +42,7 @@ public class PlayerController : BaseEntity
         _playerInput.PlayerMovement.Movement.performed += playerInput => movementInput = playerInput.ReadValue<Vector2>();
         _playerInput.PlayerMovement.Movement.canceled += playerInput => movementInput = Vector2.zero;
         _playerInput.PlayerMovement.Jump.performed += Jump;
-        _playerInput.PlayerMovement.Dash.performed += Dash;
+        _playerInput.PlayerMovement.Dash.performed += TryToDash;
 
         _playerInput.Combat.PrimaryAttack.performed += _ => attacking = true;
         _playerInput.Combat.PrimaryAttack.canceled += _ => attacking = false;
@@ -52,7 +52,7 @@ public class PlayerController : BaseEntity
         _playerInput.PlayerMovement.Movement.performed -= playerInput => movementInput = playerInput.ReadValue<Vector2>();
         _playerInput.PlayerMovement.Movement.canceled -= playerInput => movementInput = Vector2.zero;
         _playerInput.PlayerMovement.Jump.performed -= Jump;
-        _playerInput.PlayerMovement.Dash.performed -= Dash;
+        _playerInput.PlayerMovement.Dash.performed -= TryToDash;
 
         _playerInput.Combat.PrimaryAttack.performed -= _ => attacking = true;
         _playerInput.Combat.PrimaryAttack.canceled -= _ => attacking = false;
@@ -154,7 +154,7 @@ public class PlayerController : BaseEntity
     #endregion
 
     #region Movement 
-    public void Dash(InputAction.CallbackContext callbackContext)
+    public void TryToDash(InputAction.CallbackContext callbackContext)
     {
         if (_hc.IsDead || GameManager.Instance.gameState != GameManager.GameState.Normal) { return; }
         if (dashCooldown > 0f) { return; }
@@ -293,12 +293,9 @@ public class PlayerController : BaseEntity
     #endregion
 
     #region Leveling
-    public void PickupApple()
+    public void PickupFruit()
     {
-        _hc.Heal(10);
         experience++;
-        jumps++;
-        jumps = Mathf.Clamp(jumps, 0, jumpCount);
 
         if (experience >= level + 1)
         {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
-public class Enemy_TouchDamage : BaseEntity
+public class Enemy_Slime : BaseEntity
 {
     public LayerMask playerLayer;
     public float attackCooldown = 5;

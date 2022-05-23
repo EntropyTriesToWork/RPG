@@ -76,7 +76,7 @@ public abstract class BaseEntity : MonoBehaviour
             if (_hc.canTakeDamage)
             {
                 _hc.TakeDamage(new DamageInfo(10, null));
-                _rb.AddForce(Vector2.up * 10f, ForceMode2D.Impulse);
+                _rb.AddForce(-_rb.velocity.normalized * 15f, ForceMode2D.Impulse);
             }
         }
     }

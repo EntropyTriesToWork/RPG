@@ -45,7 +45,11 @@ public class HealthComponent : MonoBehaviour, IDamageable
 
         report.damage = damage;
         report.damageState = DamageReportState.Normal;
-        if (damage > 0) { OnTakeDamage?.Invoke(report); }
+        if (damage > 0)
+        {
+            OnTakeDamage?.Invoke(report);
+            NumberPopupManager.Instance.DamageNumber(transform.position, damage);
+        }
         return report;
     }
 
@@ -67,7 +71,11 @@ public class HealthComponent : MonoBehaviour, IDamageable
     public void Heal(int healAmount)
     {
         int maxHealAmt = _entity.MAXHP - health;
-        Health += Mathf.Clamp(healAmount, 0, maxHealAmt);
+        if (maxHealAmt > 0)
+        {
+            Health += Mathf.Clamp(healAmount, 0, maxHealAmt);
+            NumberPopupManager.Instance.HealingNumber(transform.position, maxHealAmt);
+        }
     }
 
     #region Getters
