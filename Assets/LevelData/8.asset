@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   key: 8
   levelData:
-    description: Long Jumps
+    description: Easy
     difficulty: 2
     passed: 1
     unlocked: 1
-    time: 0
+    time: 11.87256
     mapPrefab: {fileID: 8250689206296509062, guid: e61c5e121291dab4abc92ae55ea58f65, type: 3}

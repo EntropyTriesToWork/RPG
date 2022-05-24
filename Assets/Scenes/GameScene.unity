@@ -904,14 +904,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 6364941400171512955, guid: 5d145c723e8b7da4e8633eb96b72bbc9, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6364941400324191454, guid: 5d145c723e8b7da4e8633eb96b72bbc9, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: -10.700012
-      objectReference: {fileID: 0}
     - target: {fileID: 6364941400400683627, guid: 5d145c723e8b7da4e8633eb96b72bbc9, type: 3}
       propertyPath: m_Name
       value: Player_Frog

@@ -19,6 +19,7 @@ public class PlayerController : BaseEntity
     [FoldoutGroup("Movement")] public float jumpForce;
     [FoldoutGroup("Movement")] public int jumpCount = 1;
     [FoldoutGroup("Movement")] public ParticleSystem jumpParticleEffect;
+    [FoldoutGroup("Movement")] public float mercyTime = 0.1f;
 
     public float MoveSpeed { get => entityStats.MoveSpeed.Value; }
 
@@ -33,6 +34,7 @@ public class PlayerController : BaseEntity
 
     private bool _canCheckForGround;
     [FoldoutGroup("ReadOnly")] [ReadOnly] public Vector2 lastValidPosition;
+    [FoldoutGroup("ReadOnly")] [ReadOnly] public float lastTimeGrounded;
 
     #region Messages
     private void OnEnable()
@@ -159,20 +161,25 @@ public class PlayerController : BaseEntity
         if (_hc.IsDead || GameManager.Instance.gameState != GameManager.GameState.Normal) { return; }
         if (dashCooldown > 0f) { return; }
 
-        float duration = 0.2f;
         if (level >= 2)
         {
-            dashCooldown = 2f;
-
-            _rb.velocity = Vector2.zero;
-            _rb.AddForce(Vector2.right * transform.localScale.x * dashForce, ForceMode2D.Impulse);
-            _rb.gravityScale = 0;
-            _rb.drag = 1;
-            StartCoroutine(DelayedAction(duration, () => _rb.gravityScale = 2));
-            StartCoroutine(DelayedAction(duration, () => _rb.drag = 5));
-            StartCoroutine(DelayedAction(duration, () => _rb.velocity *= 0.5f));
-            StartCoroutine(DashAfterImage(duration));
+            Dash();
         }
+    }
+    public void Dash()
+    {
+        float duration = 0.2f;
+
+        dashCooldown = 1.5f;
+
+        _rb.velocity = Vector2.zero;
+        _rb.AddForce(Vector2.right * transform.localScale.x * dashForce, ForceMode2D.Impulse);
+        _rb.gravityScale = 0;
+        _rb.drag = 1;
+        StartCoroutine(DelayedAction(duration, () => _rb.gravityScale = 2));
+        StartCoroutine(DelayedAction(duration, () => _rb.drag = 5));
+        StartCoroutine(DelayedAction(duration, () => _rb.velocity *= 0.5f));
+        StartCoroutine(DashAfterImage(duration));
 
         IEnumerator DashAfterImage(float duration)
         {
@@ -200,7 +207,7 @@ public class PlayerController : BaseEntity
     public void Jump(InputAction.CallbackContext context)
     {
         if (_hc.IsDead || GameManager.Instance.gameState != GameManager.GameState.Normal) { return; }
-        if (grounded)
+        if (grounded || Time.realtimeSinceStartup - lastTimeGrounded <= mercyTime)
         {
             _animator.Play("Jump");
             _rb.AddForce(jumpForce * Vector2.up, ForceMode2D.Impulse);
@@ -269,6 +276,7 @@ public class PlayerController : BaseEntity
             _rb.drag = 5;
             jumps = jumpCount;
             lastValidPosition = transform.position;
+            lastTimeGrounded = Time.realtimeSinceStartup;
             if (IsCurrentState(FallingState)) { _animator.Play("Idle"); }
         }
         else

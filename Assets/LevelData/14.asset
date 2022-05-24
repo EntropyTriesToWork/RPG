@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   key: 14
   levelData:
-    description: Spikes 2
+    description: Pineapple
     difficulty: 3
-    passed: 1
+    passed: 0
     unlocked: 1
     time: 0
     mapPrefab: {fileID: 8250689206296509062, guid: b5ddf526f8764a14294b38aa4bd9c1dc, type: 3}

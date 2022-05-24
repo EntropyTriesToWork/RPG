@@ -5106,7 +5106,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 0, y: -0.000030517578}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 64, y: 32}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &6364941400171512837
@@ -5181,7 +5181,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 13, y: -11}
+  m_AnchoredPosition: {x: 13, y: -10.700012}
   m_SizeDelta: {x: 16, y: 12}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &6364941400324191448
@@ -5460,6 +5460,7 @@ MonoBehaviour:
   jumpForce: 12
   jumpCount: 0
   jumpParticleEffect: {fileID: 2884597755523945935}
+  mercyTime: 0.1
   level: 0
   experience: 0
   attacking: 0
@@ -5469,6 +5470,7 @@ MonoBehaviour:
   grounded: 0
   jumps: 2
   lastValidPosition: {x: 0, y: 0}
+  lastTimeGrounded: 0
 --- !u!50 &6364941400400683632
 Rigidbody2D:
   serializedVersion: 4

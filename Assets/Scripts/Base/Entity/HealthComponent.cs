@@ -35,7 +35,7 @@ public class HealthComponent : MonoBehaviour, IDamageable
 
         DamageReport report = new DamageReport();
         report.attacker = damageInfo.attacker;
-        if (!canTakeDamage || GameManager.Instance.gameState != GameManager.GameState.Normal) { report.damageState = DamageReportState.Canceled; return report; }
+        if (!canTakeDamage || GameManager.Instance.gameState != GameManager.GameState.Normal || IsDead) { report.damageState = DamageReportState.Canceled; return report; }
         if (_entity == null) { Debug.LogError("Missing Entity component but still calling TakeDamage!"); report.damageState = DamageReportState.Canceled; return report; }
         if (UnityEngine.Random.Range(0f, 100f) < _entity.DODG * 100f) { report.damageState = DamageReportState.Dodged; return report; }
 
