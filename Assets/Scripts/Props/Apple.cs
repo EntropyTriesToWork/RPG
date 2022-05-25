@@ -7,10 +7,8 @@ public class Apple : Fruit
     public override void Pickup(Collider2D collision)
     {
         PlayerController pc = collision.GetComponent<PlayerController>();
-        pc.PickupFruit();
-        pc.jumps++;
-        pc.jumps = Mathf.Clamp(pc.jumps, 0, pc.jumpCount);
+        pc.GainExp();
 
-        collision.GetComponent<HealthComponent>().Heal(5);
+        collision.GetComponent<HealthComponent>().Heal(10);
     }
 }

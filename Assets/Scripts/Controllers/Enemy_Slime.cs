@@ -24,7 +24,7 @@ public class Enemy_Slime : BaseEntity
 
         Attack();
 
-        if (transform.position.y < -10f) { _hc.TakeDamage(new DamageInfo(99999, null)); }
+        EntityOutOfBounds();
     }
 
     private bool TargetWithingAttackRange => Vector3.Distance(target.transform.position, transform.position) < 2f;
@@ -53,5 +53,10 @@ public class Enemy_Slime : BaseEntity
     {
         if (Physics2D.OverlapBox(transform.position + (Vector3)_boxCollider.offset, _boxCollider.size, 0, playerLayer) != null) { return true; }
         return false;
+    }
+
+    public override void EntityOutOfBounds()
+    {
+        if (transform.position.y < -20f) { Destroy(gameObject); }
     }
 }

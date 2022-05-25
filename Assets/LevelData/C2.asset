@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   key: C2
   levelData:
-    description: Apples
+    description: Oranges
     difficulty: 4
-    passed: 1
+    passed: 0
     unlocked: 1
-    time: 1.3778422
+    time: 0
     mapPrefab: {fileID: 8953960959074028589, guid: bc027385f9c0d60419ae0f5f66c67fc4, type: 3}

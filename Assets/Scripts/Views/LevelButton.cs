@@ -49,9 +49,13 @@ public class LevelButton : MonoBehaviour
                     break;
                 case 4:
                     GetComponent<Image>().color = D4;
+                    description.color = Color.white;
+                    time.color = Color.white;
                     break;
                 case 5:
                     GetComponent<Image>().color = D5;
+                    description.color = Color.white;
+                    time.color = Color.white;
                     break;
                 default:
                     break;

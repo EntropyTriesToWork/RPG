@@ -27,6 +27,7 @@ public abstract class BaseEntity : MonoBehaviour
     {
         Debug.LogWarning("Recalculate stats not implemented yet!");
     }
+    public abstract void EntityOutOfBounds();
 
     protected BoxCollider2D _boxCollider;
     protected Rigidbody2D _rb;

@@ -20,6 +20,7 @@ public class LevelManager : MonoBehaviour
     public LevelSO selectedLevel;
     List<LevelButton> _levelButtons;
 
+    #region Messages
     private void Awake()
     {
         if (Instance != null) { Destroy(gameObject); }
@@ -43,6 +44,8 @@ public class LevelManager : MonoBehaviour
         levelButtonsCanvas.blocksRaycasts = false;
         levelButtonsCanvas.interactable = false;
     }
+    #endregion
+
     private void LoadLevelDataFromPlayerPrefs()
     {
         for (int i = 0; i < levels.Count; i++)
@@ -156,6 +159,14 @@ public class LevelManager : MonoBehaviour
     {
         Instantiate(selectedLevel.levelData.mapPrefab);
         ShowLevelDescription();
+    }
+    public bool HasPlayerPassedLevel(string levelKey)
+    {
+        for (int i = 0; i < levels.Count; i++)
+        {
+            if (levels[i].key == levelKey) { return levels[i].levelData.passed; }
+        }
+        return false;
     }
     public void SelectLevel(LevelSO level)
     {

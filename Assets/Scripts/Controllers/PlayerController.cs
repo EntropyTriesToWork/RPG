@@ -17,6 +17,7 @@ public class PlayerController : BaseEntity
     [FoldoutGroup("Movement")] public GameObject afterImagePrefab;
     [FoldoutGroup("Movement")] public float dashForce;
     [FoldoutGroup("Movement")] public float jumpForce;
+    [FoldoutGroup("Movement")] public float normalDrag;
     [FoldoutGroup("Movement")] public int jumpCount = 1;
     [FoldoutGroup("Movement")] public ParticleSystem jumpParticleEffect;
     [FoldoutGroup("Movement")] public float mercyTime = 0.1f;
@@ -68,11 +69,13 @@ public class PlayerController : BaseEntity
 
         jumps = jumpCount;
         level = 0;
+        _rb.drag = normalDrag;
     }
     void FixedUpdate()
     {
         CheckForGround();
-        CheckIfPlayerOutOfBounds();
+
+        if (transform.position.y < -20f) { EntityOutOfBounds(); }
 
         if (_hc.IsDead || GameManager.Instance.gameState != GameManager.GameState.Normal) { return; }
 
@@ -105,13 +108,10 @@ public class PlayerController : BaseEntity
         }
     }
 
-    private void CheckIfPlayerOutOfBounds()
+    public override void EntityOutOfBounds()
     {
-        if (transform.position.y < -10f)
-        {
-            ResetToLastValidPosition();
-            _hc.TakeDamage(new DamageInfo(10, null));
-        }
+        ResetToLastValidPosition();
+        _hc.TakeDamage(new DamageInfo(10, null));
     }
     #endregion
 
@@ -177,12 +177,13 @@ public class PlayerController : BaseEntity
         _rb.gravityScale = 0;
         _rb.drag = 1;
         StartCoroutine(DelayedAction(duration, () => _rb.gravityScale = 2));
-        StartCoroutine(DelayedAction(duration, () => _rb.drag = 5));
+        StartCoroutine(DelayedAction(duration, () => _rb.drag = normalDrag));
         StartCoroutine(DelayedAction(duration, () => _rb.velocity *= 0.5f));
         StartCoroutine(DashAfterImage(duration));
 
         IEnumerator DashAfterImage(float duration)
         {
+            _dashing = true;
             float time = duration;
             while (time > 0)
             {
@@ -193,8 +194,10 @@ public class PlayerController : BaseEntity
                 time -= Time.deltaTime;
                 yield return new WaitForEndOfFrame();
             }
+            _dashing = false;
         }
     }
+    bool _dashing;
     public override void Move()
     {
         movementInput.y = 0;
@@ -216,7 +219,7 @@ public class PlayerController : BaseEntity
             _canCheckForGround = false;
             _rb.drag = 1;
             StartCoroutine(DelayedAction(0.2f, () => _canCheckForGround = true));
-            StartCoroutine(DelayedAction(0.2f, () => _rb.drag = 5));
+            StartCoroutine(DelayedAction(0.2f, () => _rb.drag = normalDrag));
 
             jumpParticleEffect.Play();
             return;
@@ -256,8 +259,6 @@ public class PlayerController : BaseEntity
                     hit.GetComponent<IDamageable>().TakeDamage(new DamageInfo(10, gameObject));
                 }
             }
-            //_hc.canTakeDamage = false;
-            //StartCoroutine(DelayedAction(0.25f, () => _hc.canTakeDamage = true));
         }
     }
     public void CheckIfShouldSwitchToFalling()
@@ -273,11 +274,16 @@ public class PlayerController : BaseEntity
         if (Physics2D.OverlapBox(transform.position + new Vector3(0, -1f, 0), new Vector3(0.8f, 0.2f, 0), 0, groundLayers))
         {
             grounded = true;
-            _rb.drag = 5;
+            if (!_dashing) { _rb.drag = normalDrag; }
             jumps = jumpCount;
-            lastValidPosition = transform.position;
+
             lastTimeGrounded = Time.realtimeSinceStartup;
             if (IsCurrentState(FallingState)) { _animator.Play("Idle"); }
+
+            if (Physics2D.OverlapBox(transform.position + new Vector3(movementInput.x * 0.4f, -1f, 0), new Vector3(0.1f, 0.2f, 0), 0, groundLayers))
+            {
+                lastValidPosition = transform.position;
+            }
         }
         else
         {
@@ -301,7 +307,7 @@ public class PlayerController : BaseEntity
     #endregion
 
     #region Leveling
-    public void PickupFruit()
+    public void GainExp()
     {
         experience++;
 
@@ -356,7 +362,7 @@ public class PlayerController : BaseEntity
 
         while (obj.transform.localPosition.y < 2f)
         {
-            obj.transform.localPosition += new Vector3(0, Time.deltaTime, 0);
+            obj.transform.localPosition += new Vector3(0, Time.deltaTime * 0.75f, 0);
             obj.transform.localScale = transform.localScale;
             yield return new WaitForEndOfFrame();
         }
@@ -373,5 +379,8 @@ public class PlayerController : BaseEntity
 
         Gizmos.color = Color.blue;
         Gizmos.DrawWireCube(transform.position + new Vector3(0, -1.2f, 0), new Vector3(0.8f, 0.2f, 0));
+
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireCube(transform.position + new Vector3(movementInput.x * 0.4f, -1f, 0), new Vector3(0.1f, 0.2f, 0));
     }
 }

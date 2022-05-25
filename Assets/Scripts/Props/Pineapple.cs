@@ -8,7 +8,7 @@ public class Pineapple : Fruit
     {
         PlayerController pc = collision.GetComponent<PlayerController>();
         pc.GetComponent<HealthComponent>().TakeDamage(new DamageInfo(5, null));
-        pc.PickupFruit();
+        pc.GainExp();
         pc.Dash();
     }
 }
