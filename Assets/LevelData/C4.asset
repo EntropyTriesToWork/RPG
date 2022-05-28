@@ -13,10 +13,23 @@ MonoBehaviour:
   m_Name: C4
   m_EditorClassIdentifier: 
   key: C4
+  stars: 0
+  starRequirements:
+  - type: 2
+    time: 0
+    kills: 0
+    fruitCollected: 0
+  - type: 7
+    time: 0
+    kills: 0
+    fruitCollected: 5
+  - type: 0
+    time: 25
+    kills: 0
+    fruitCollected: 0
   levelData:
     description: Fly 2
-    difficulty: 5
-    passed: 1
+    passed: 0
     unlocked: 1
-    time: 1.3778422
+    time: 0
     mapPrefab: {fileID: 8953960959074028589, guid: 0fe9e92d243686141b1a54aacf94a216, type: 3}

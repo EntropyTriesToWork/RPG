@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8953960957664604113}
   - component: {fileID: 8953960957664604115}
   - component: {fileID: 8953960957664604112}
-  m_Layer: 8
+  m_Layer: 6
   m_Name: TrapLayer
   m_TagString: Traps
   m_Icon: {fileID: 0}
@@ -1595,7 +1595,7 @@ GameObject:
   - component: {fileID: 8953960958854002747}
   - component: {fileID: 8953960958854002744}
   - component: {fileID: 8953960958854002745}
-  m_Layer: 8
+  m_Layer: 6
   m_Name: Traps
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1752,7 +1752,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8953960959074028591}
   - component: {fileID: 8953960959074028588}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Challenge_1
   m_TagString: Untagged
   m_Icon: {fileID: -5442936267250999957, guid: 0000000000000000d000000000000000, type: 0}

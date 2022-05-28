@@ -13,10 +13,23 @@ MonoBehaviour:
   m_Name: C5
   m_EditorClassIdentifier: 
   key: C5
+  stars: 1
+  starRequirements:
+  - type: 2
+    time: 0
+    kills: 0
+    fruitCollected: 0
+  - type: 7
+    time: 0
+    kills: 0
+    fruitCollected: 15
+  - type: 0
+    time: 45
+    kills: 0
+    fruitCollected: 0
   levelData:
     description: Why
-    difficulty: 5
     passed: 1
     unlocked: 1
-    time: 1.3778422
+    time: 53.223064
     mapPrefab: {fileID: 8953960959074028589, guid: 302128054fdef8f4bb4a3dbc7c231703, type: 3}

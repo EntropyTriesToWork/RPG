@@ -80,5 +80,8 @@ public class HealthComponent : MonoBehaviour, IDamageable
 
     #region Getters
     public bool IsDead => Health <= 0;
+    public bool FullOnHealth => Health >= _entity.MAXHP;
+    public float HealthPercentage => (float)Health / (float)_entity.MAXHP;
+    public float MissingHealthPercentage => 1f - (float)Health / (float)_entity.MAXHP;
     #endregion
 }

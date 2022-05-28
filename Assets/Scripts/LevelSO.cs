@@ -16,11 +16,17 @@ public class StarRequirement
 {
     public StarRequirementType type;
     [ShowIf("type", StarRequirementType.Time)] public float time;
+    [ShowIf("type", StarRequirementType.KillAmount)] public int kills;
+    [ShowIf("type", StarRequirementType.FruitCollected)] public int fruitCollected;
 }
 public enum StarRequirementType
 {
-    Time,
-    Hitless,
-    FullHealth,
-    NoDashing,
+    Time = 0,
+    Hitless = 1,
+    FullHealth = 2,
+    NoDashing = 3,
+    NoJumping = 4,
+    NoKilling = 5,
+    KillAmount = 6,
+    FruitCollected = 7,
 }

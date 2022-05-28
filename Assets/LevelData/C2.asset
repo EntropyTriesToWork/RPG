@@ -13,10 +13,23 @@ MonoBehaviour:
   m_Name: C2
   m_EditorClassIdentifier: 
   key: C2
-  levelData:
-    description: Oranges
-    difficulty: 4
-    passed: 0
-    unlocked: 1
+  stars: 0
+  starRequirements:
+  - type: 1
     time: 0
+    kills: 0
+    fruitCollected: 0
+  - type: 7
+    time: 0
+    kills: 0
+    fruitCollected: 18
+  - type: 0
+    time: 19
+    kills: 0
+    fruitCollected: 0
+  levelData:
+    description: True Flight
+    passed: 1
+    unlocked: 1
+    time: 16.135273
     mapPrefab: {fileID: 8953960959074028589, guid: bc027385f9c0d60419ae0f5f66c67fc4, type: 3}

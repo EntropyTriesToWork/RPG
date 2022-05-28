@@ -5016,7 +5016,10 @@ MonoBehaviour:
   playerLayer:
     serializedVersion: 2
     m_Bits: 512
-  attackCooldown: 1
+  visionLayers:
+    serializedVersion: 2
+    m_Bits: 576
   movementType: 1
   dropOnDeath: {fileID: 7749676366437059592, guid: 7647f44603dbf5e419a724856661ae49, type: 3}
   target: {fileID: 0}
+  visionRange: 15

@@ -243,8 +243,8 @@ MonoBehaviour:
   m_DeadZoneHeight: 0
   m_DeadZoneDepth: 0
   m_UnlimitedSoftZone: 0
-  m_SoftZoneWidth: 0.8
-  m_SoftZoneHeight: 0.8
+  m_SoftZoneWidth: 0.5
+  m_SoftZoneHeight: 0.5
   m_BiasX: 0
   m_BiasY: 0
   m_CenterOnActivate: 1
@@ -493,10 +493,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: LevelManager
       objectReference: {fileID: 0}
-    - target: {fileID: 3396873673989465164, guid: 960a7db978965c94096f6c5690cf412e, type: 3}
-      propertyPath: selectedLevel
-      value: 
-      objectReference: {fileID: 11400000, guid: b89264b55720541428a66e2157bf8948, type: 2}
     - target: {fileID: 3396873673989465165, guid: 960a7db978965c94096f6c5690cf412e, type: 3}
       propertyPath: m_RootOrder
       value: 5

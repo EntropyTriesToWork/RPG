@@ -12,13 +12,18 @@ public class LevelManager : MonoBehaviour
 
     public List<LevelSO> levels;
 
-    [FoldoutGroup("UI")] public CanvasGroup levelButtonsCanvas;
-    [FoldoutGroup("UI")] public Transform levelButtonsParent;
-    [FoldoutGroup("UI")] public GameObject levelButtonPrefab;
+    [FoldoutGroup("UI")] public CanvasGroup levelButtonsCanvas, levelInfoCanvas;
+    [FoldoutGroup("UI")] public Transform levelButtonsParent, starRequirementsParent;
+    [FoldoutGroup("UI")] public GameObject levelButtonPrefab, starRequirementViewPrefab;
     [FoldoutGroup("UI")] public TMP_Text levelDescText;
+    [FoldoutGroup("UI")] public Sprite[] starRequirementTokens;
+    [FoldoutGroup("UI")] public Color green, red;
 
     public LevelSO selectedLevel;
     List<LevelButton> _levelButtons;
+    List<StarRequirementView> _starRequirementViews;
+
+    [ReadOnly] public PlayerController pc;
 
     #region Messages
     private void Awake()
@@ -32,17 +37,26 @@ public class LevelManager : MonoBehaviour
         {
             ResetSaveData();
         }
+        _levelButtons = new List<LevelButton>();
+        _starRequirementViews = new List<StarRequirementView>();
+        HideLevelInfo();
     }
     private void Start()
     {
         LoadLevelDataFromPlayerPrefs();
-        _levelButtons = new List<LevelButton>();
 
         levelDescText.text = "";
 
         levelButtonsCanvas.alpha = 0;
         levelButtonsCanvas.blocksRaycasts = false;
         levelButtonsCanvas.interactable = false;
+    }
+    private void Update()
+    {
+        if (pc != null)
+        {
+            UpdateStarRequirementUI();
+        }
     }
     #endregion
 
@@ -54,6 +68,7 @@ public class LevelManager : MonoBehaviour
             {
                 levels[i].levelData.passed = PlayerPrefs.GetInt(levels[i].key + "_Passed") == 1 ? true : false;
                 levels[i].levelData.time = PlayerPrefs.GetFloat(levels[i].key + "_Time");
+                levels[i].stars = PlayerPrefs.GetInt(levels[i].key + "_Stars");
                 if (DoesNextLevelExist(levels[i]))
                 {
                     levels[i + 1].levelData.unlocked = true;
@@ -67,6 +82,53 @@ public class LevelManager : MonoBehaviour
         }
         levels[0].levelData.unlocked = true;
     }
+    private void UpdateStarRequirementUI()
+    {
+        for (int i = 0; i < selectedLevel.starRequirements.Count; i++)
+        {
+            StarRequirementType type = selectedLevel.starRequirements[i].type;
+            switch (type)
+            {
+                case StarRequirementType.Time:
+                    if (selectedLevel.starRequirements[i].time >= Mathf.FloorToInt(GameManager.Instance.GameTime)) { _starRequirementViews[i].UpdateTextColor(green); }
+                    else { _starRequirementViews[i].UpdateTextColor(red); }
+                    break;
+                case StarRequirementType.Hitless:
+                    if (pc.lastTimeTookDamage == 0) { _starRequirementViews[i].IsComplete(true); }
+                    else { _starRequirementViews[i].IsComplete(false); }
+                    break;
+                case StarRequirementType.FullHealth:
+                    if (pc.GetComponent<HealthComponent>().FullOnHealth) { _starRequirementViews[i].IsComplete(true); }
+                    else { _starRequirementViews[i].IsComplete(false); }
+                    break;
+                case StarRequirementType.NoDashing:
+                    if (pc.totalDashesMade <= 0) { _starRequirementViews[i].IsComplete(true); }
+                    else { _starRequirementViews[i].IsComplete(false); }
+                    break;
+                case StarRequirementType.NoJumping:
+                    if (pc.totalJumpsMade <= 0) { _starRequirementViews[i].IsComplete(true); }
+                    else { _starRequirementViews[i].IsComplete(false); }
+                    break;
+                case StarRequirementType.NoKilling:
+                    if (GameManager.Instance.enemiesKilled <= 0) { _starRequirementViews[i].IsComplete(true); }
+                    else { _starRequirementViews[i].IsComplete(false); }
+                    break;
+                case StarRequirementType.KillAmount:
+                    _starRequirementViews[i].UpdateText(GameManager.Instance.enemiesKilled + "/" + selectedLevel.starRequirements[i].kills);
+                    if (GameManager.Instance.enemiesKilled >= selectedLevel.starRequirements[i].kills) { _starRequirementViews[i].UpdateTextColor(green); }
+                    else { _starRequirementViews[i].UpdateTextColor(red); }
+                    break;
+                case StarRequirementType.FruitCollected:
+                    _starRequirementViews[i].UpdateText(pc.totalFruitCollected + "/" + selectedLevel.starRequirements[i].fruitCollected);
+                    if (pc.totalFruitCollected >= selectedLevel.starRequirements[i].fruitCollected) { _starRequirementViews[i].UpdateTextColor(green); }
+                    else { _starRequirementViews[i].UpdateTextColor(red); }
+                    break;
+                default:
+                    break;
+            }
+        }
+
+    }
 
     #region Public
     [Button]
@@ -78,7 +140,7 @@ public class LevelManager : MonoBehaviour
             levels[i].levelData.unlocked = false;
             levels[i].levelData.passed = false;
             levels[i].levelData.time = 0;
-
+            levels[i].stars = 0;
             levels[0].levelData.unlocked = true;
         }
 
@@ -107,6 +169,49 @@ public class LevelManager : MonoBehaviour
         selectedLevel.levelData.passed = true;
         PlayerPrefs.SetInt(selectedLevel.key + "_Passed", 1);
 
+        int totalStars = 0;
+
+        for (int i = 0; i < selectedLevel.starRequirements.Count; i++)
+        {
+            StarRequirementType type = selectedLevel.starRequirements[i].type;
+            PlayerController pc = FindObjectOfType<PlayerController>();
+
+            switch (type)
+            {
+                case StarRequirementType.Time:
+                    if (selectedLevel.starRequirements[i].time >= Mathf.FloorToInt(time)) { totalStars++; }
+                    break;
+                case StarRequirementType.Hitless:
+                    if (pc.lastTimeTookDamage == 0) { totalStars++; }
+                    break;
+                case StarRequirementType.FullHealth:
+                    if (pc.GetComponent<HealthComponent>().FullOnHealth) { totalStars++; }
+                    break;
+                case StarRequirementType.NoDashing:
+                    if (pc.totalDashesMade <= 0) { totalStars++; }
+                    break;
+                case StarRequirementType.NoJumping:
+                    if (pc.totalJumpsMade <= 0) { totalStars++; }
+                    break;
+                case StarRequirementType.NoKilling:
+                    if (GameManager.Instance.enemiesKilled <= 0) { totalStars++; }
+                    break;
+                case StarRequirementType.KillAmount:
+                    if (GameManager.Instance.enemiesKilled >= selectedLevel.starRequirements[i].kills) { totalStars++; }
+                    break;
+                case StarRequirementType.FruitCollected:
+                    if (pc.totalFruitCollected >= selectedLevel.starRequirements[i].fruitCollected) { totalStars++; }
+                    break;
+                default:
+                    break;
+            }
+        }
+        if (totalStars > selectedLevel.stars)
+        {
+            selectedLevel.stars = totalStars;
+            PlayerPrefs.SetInt(selectedLevel.key + "_Stars", selectedLevel.stars);
+        }
+
         if (time < selectedLevel.levelData.time || selectedLevel.levelData.time == 0f)
         {
             selectedLevel.levelData.time = time;
@@ -120,6 +225,36 @@ public class LevelManager : MonoBehaviour
             PlayerPrefs.SetInt(level.key + "_Unlocked", 1);
         }
     }
+    public void ChangeToNewLevel()
+    {
+        levelInfoCanvas.alpha = 1;
+        for (int i = 0; i < _starRequirementViews.Count; i++)
+        {
+            Destroy(_starRequirementViews[i].gameObject);
+        }
+        _starRequirementViews = new List<StarRequirementView>();
+
+        for (int i = 0; i < selectedLevel.starRequirements.Count; i++)
+        {
+            int index = (int)selectedLevel.starRequirements[i].type;
+            StarRequirementView srv = Instantiate(starRequirementViewPrefab, starRequirementsParent).GetComponent<StarRequirementView>();
+            _starRequirementViews.Add(srv);
+
+            srv.UpdateToken(starRequirementTokens[index]);
+            srv.DisableCheckXMarks();
+            if (index == 0) { srv.UpdateText(GameManager.FormatTimeToMinutes(selectedLevel.starRequirements[i].time)); }
+            else if (index == 6) { srv.UpdateText("0/" + selectedLevel.starRequirements[i].kills); }
+            else if (index == 7) { srv.UpdateText("0/" + selectedLevel.starRequirements[i].fruitCollected); }
+            else { srv.UpdateText(""); }
+        }
+        UpdateLevelDescription();
+    }
+    public void HideLevelInfo()
+    {
+        levelInfoCanvas.alpha = 0;
+        levelInfoCanvas.blocksRaycasts = false;
+        levelInfoCanvas.interactable = false;
+    }
     public void GoToNextLevel()
     {
         if (DoesNextLevelExist())
@@ -127,6 +262,7 @@ public class LevelManager : MonoBehaviour
             CloseLevelSelection();
             selectedLevel = GetNextLevel();
             SceneManager.LoadScene("GameScene");
+            ChangeToNewLevel();
         }
         else
         {
@@ -158,7 +294,8 @@ public class LevelManager : MonoBehaviour
     public void SpawnLevel()
     {
         Instantiate(selectedLevel.levelData.mapPrefab);
-        ShowLevelDescription();
+        UpdateLevelDescription();
+        ChangeToNewLevel();
     }
     public bool HasPlayerPassedLevel(string levelKey)
     {
@@ -192,7 +329,7 @@ public class LevelManager : MonoBehaviour
 
         DeleteLevelButtons();
     }
-    public void ShowLevelDescription()
+    public void UpdateLevelDescription()
     {
         levelDescText.text = selectedLevel.levelData.description;
     }
@@ -236,11 +373,8 @@ public class LevelManager : MonoBehaviour
 public class LevelData
 {
     public string description;
-    [ValueDropdown("values")] public int difficulty = 1;
     public bool passed;
     public bool unlocked;
     public float time;
     public GameObject mapPrefab;
-
-    private int[] values = new int[] { 1, 2, 3, 4, 5 };
 }

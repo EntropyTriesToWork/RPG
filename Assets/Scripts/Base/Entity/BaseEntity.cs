@@ -48,10 +48,10 @@ public abstract class BaseEntity : MonoBehaviour
         _boxCollider = GetComponent<BoxCollider2D>();
 
         if (entityHUD != null) { _hc.OnHealthChanged += () => entityHUD.UpdateHealth(_hc.Health, MAXHP); }
-        _hc.OnTakeDamage += TakeDamage;
+        _hc.OnTakeDamage += BodyTakeDamage;
         _hc.OnDeath += Death;
     }
-    public virtual void TakeDamage(DamageReport report)
+    public virtual void BodyTakeDamage(DamageReport report)
     {
         _hc.canTakeDamage = false;
         stunned = true;
@@ -70,7 +70,7 @@ public abstract class BaseEntity : MonoBehaviour
     public abstract void Move();
     public abstract void Death(DamageReport report);
 
-    public void OnTriggerStay2D(Collider2D collision)
+    public virtual void OnTriggerStay2D(Collider2D collision)
     {
         if (collision.CompareTag("Traps"))
         {

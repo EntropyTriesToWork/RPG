@@ -5472,6 +5472,9 @@ MonoBehaviour:
   jumps: 2
   lastValidPosition: {x: 0, y: 0}
   lastTimeGrounded: 0
+  lastTimeTookDamage: 0
+  totalDashesMade: 0
+  totalJumpsMade: 0
 --- !u!50 &6364941400400683632
 Rigidbody2D:
   serializedVersion: 4
@@ -5573,7 +5576,7 @@ Canvas:
   m_RenderMode: 0
   m_Camera: {fileID: 0}
   m_PlaneDistance: 100
-  m_PixelPerfect: 1
+  m_PixelPerfect: 0
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0

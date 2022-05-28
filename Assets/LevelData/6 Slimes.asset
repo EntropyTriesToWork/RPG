@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c46aa767bb597304fbf3699e4968eb9f, type: 3}
+  m_Name: 6 Slimes
+  m_EditorClassIdentifier: 
+  key: 6
+  stars: 3
+  starRequirements:
+  - type: 2
+    time: 0
+    kills: 0
+    fruitCollected: 0
+  - type: 6
+    time: 15
+    kills: 2
+    fruitCollected: 0
+  - type: 0
+    time: 15
+    kills: 0
+    fruitCollected: 0
+  levelData:
+    description: Slimes
+    passed: 1
+    unlocked: 1
+    time: 3.2726266
+    mapPrefab: {fileID: 8250689206296509062, guid: 5fc75c92db356ed429bbb2268323f19e, type: 3}

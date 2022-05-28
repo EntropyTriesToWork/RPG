@@ -9,7 +9,8 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
     [BoxGroup("Read Only")] [ReadOnly] public GameState gameState;
-    [BoxGroup("Read Only")] [SerializeField] float _time;
+    [BoxGroup("Read Only")] [ReadOnly] [SerializeField] float _time;
+    [BoxGroup("Read Only")] [ReadOnly] public int enemiesKilled;
     public float GameTime { get => _time; }
 
     [BoxGroup("Arena")] public bool arenaMode;

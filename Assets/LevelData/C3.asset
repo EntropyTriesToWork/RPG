@@ -13,10 +13,23 @@ MonoBehaviour:
   m_Name: C3
   m_EditorClassIdentifier: 
   key: C3
+  stars: 0
+  starRequirements:
+  - type: 2
+    time: 0
+    kills: 0
+    fruitCollected: 0
+  - type: 3
+    time: 0
+    kills: 0
+    fruitCollected: 0
+  - type: 0
+    time: 40
+    kills: 0
+    fruitCollected: 0
   levelData:
     description: Give Up
-    difficulty: 4
     passed: 1
     unlocked: 1
-    time: 17.552292
+    time: 30.4715
     mapPrefab: {fileID: 8953960959074028589, guid: 57fa903073cee224496d7677ef7e8a80, type: 3}

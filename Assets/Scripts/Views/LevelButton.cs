@@ -13,7 +13,7 @@ public class LevelButton : MonoBehaviour
 
     public LevelSO levelButton;
 
-    public Color D1, D2, D3, D4, D5;
+    public Sprite normal, bronze, silver, gold;
 
     Button _button;
 
@@ -36,28 +36,22 @@ public class LevelButton : MonoBehaviour
                 time.text = GameManager.FormatTimeToMinutes(levelData.levelData.time);
             }
 
-            switch (levelData.levelData.difficulty)
+            switch (levelData.stars)
             {
+                case 0:
+                    GetComponent<Image>().sprite = normal;
+                    break;
                 case 1:
-                    GetComponent<Image>().color = D1;
+                    GetComponent<Image>().sprite = bronze;
                     break;
                 case 2:
-                    GetComponent<Image>().color = D2;
+                    GetComponent<Image>().sprite = silver;
                     break;
                 case 3:
-                    GetComponent<Image>().color = D3;
-                    break;
-                case 4:
-                    GetComponent<Image>().color = D4;
-                    description.color = Color.white;
-                    time.color = Color.white;
-                    break;
-                case 5:
-                    GetComponent<Image>().color = D5;
-                    description.color = Color.white;
-                    time.color = Color.white;
+                    GetComponent<Image>().sprite = gold;
                     break;
                 default:
+                    GetComponent<Image>().sprite = gold;
                     break;
             }
             _button.onClick.AddListener(() => LevelManager.Instance.SelectLevel(levelData));
