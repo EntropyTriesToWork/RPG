@@ -22,6 +22,7 @@ public class LevelManager : MonoBehaviour
     public LevelSO selectedLevel;
     List<LevelButton> _levelButtons;
     List<StarRequirementView> _starRequirementViews;
+    private bool _challengeModeOff = false;
 
     [ReadOnly] public PlayerController pc;
 
@@ -53,7 +54,7 @@ public class LevelManager : MonoBehaviour
     }
     private void Update()
     {
-        if (pc != null)
+        if (pc != null && !_challengeModeOff)
         {
             UpdateStarRequirementUI();
         }
@@ -84,6 +85,7 @@ public class LevelManager : MonoBehaviour
     }
     private void UpdateStarRequirementUI()
     {
+        if (selectedLevel.starRequirements.Count < 1) { return; }
         for (int i = 0; i < selectedLevel.starRequirements.Count; i++)
         {
             StarRequirementType type = selectedLevel.starRequirements[i].type;
@@ -227,13 +229,15 @@ public class LevelManager : MonoBehaviour
     }
     public void ChangeToNewLevel()
     {
+        _challengeModeOff = PlayerPrefs.GetInt("ChallengeMode") == 1;
         levelInfoCanvas.alpha = 1;
-        for (int i = 0; i < _starRequirementViews.Count; i++)
-        {
-            Destroy(_starRequirementViews[i].gameObject);
-        }
-        _starRequirementViews = new List<StarRequirementView>();
-
+        ClearStarRequirementView();
+        CreateStarRequirement();
+        UpdateLevelDescription();
+    }
+    private void CreateStarRequirement()
+    {
+        if (_challengeModeOff) { return; }
         for (int i = 0; i < selectedLevel.starRequirements.Count; i++)
         {
             int index = (int)selectedLevel.starRequirements[i].type;
@@ -247,7 +251,14 @@ public class LevelManager : MonoBehaviour
             else if (index == 7) { srv.UpdateText("0/" + selectedLevel.starRequirements[i].fruitCollected); }
             else { srv.UpdateText(""); }
         }
-        UpdateLevelDescription();
+    }
+    private void ClearStarRequirementView()
+    {
+        for (int i = 0; i < _starRequirementViews.Count; i++)
+        {
+            Destroy(_starRequirementViews[i].gameObject);
+        }
+        _starRequirementViews = new List<StarRequirementView>();
     }
     public void HideLevelInfo()
     {
